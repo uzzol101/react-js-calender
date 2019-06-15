@@ -5,10 +5,10 @@ export default class Calender extends Component {
     super(props);
     this.todaysDate = new Date().getDate();
     this.today = new Date();
-    this.invalidDay1 = new Date(2019, 5, 20);
-    this.invalidDay2 = new Date(2019, 5, 29);
     this.selectedDaysMap = new Map();
     this.disabledDaysMap = new Map();
+    this.selectedDaysList = []
+    this.disabledDaysList = []
     this.state = {
       selectedDays: [this.todaysDate],
       currentMonthYear: new Date()
@@ -37,7 +37,9 @@ export default class Calender extends Component {
       currentMonthYear.getMonth(),
       0
     ).toLocaleDateString();
-    this.dateRange(new  Date(2019,5,20), new Date(2019,6,28))
+    this.dateRange(new  Date(2019,5,20), new Date(2019,5,22))
+    this.dateRange(new  Date(2019,5,25), new Date(2019,5,26))
+
     this.setState({
       selectedDays: this.todaysDate
     });
@@ -143,10 +145,10 @@ export default class Calender extends Component {
     ).toLocaleDateString();
     let daysOfSelectedMonth = this.selectedDaysMap.get(dateString);
     let disabledDaysOfMonth = this.disabledDaysMap.get(dateString);
-    let selectedDays = daysOfSelectedMonth
+    this.selectedDaysList = daysOfSelectedMonth
       ? [...daysOfSelectedMonth.values()]
       : [];
-    let disabledDays = disabledDaysOfMonth
+    this.disabledDaysList = disabledDaysOfMonth
       ? [...disabledDaysOfMonth.values()]
       : [];
     let classList = ["day"]; // default class
@@ -161,11 +163,11 @@ export default class Calender extends Component {
     }
 
     // highlight selected days
-    if (selectedDays.includes(day)) {
+    if (this.selectedDaysList.includes(day)) {
       classList.push("selected");
     }
     // highlight disabled days
-    if (disabledDays.includes(day)) {
+    if (this.disabledDaysList.includes(day)) {
       classList.push("invalid");
     }
     // disable past day's for running month
@@ -201,7 +203,8 @@ export default class Calender extends Component {
             className={this.prepareCalenderClassList(day)}
             onClick={() => this.onDaySelect(day)}
           >
-            {day}
+            {day}{this.disabledDaysList.includes(day)? <div>D</div>:  ""}
+            {this.selectedDaysList.includes(day)? <div>A</div>:  ""}
           </div>
         ))}
       </div>
