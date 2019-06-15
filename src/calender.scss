@@ -20,6 +20,9 @@ body {
     .disabled {
         background: gray;
     }
+    .invalid {
+        background: pink;
+    }
     .weekdays {
         display: flex;
         justify-content: space-between;

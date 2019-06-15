@@ -6,6 +6,7 @@ export default class Calender extends Component {
     this.todaysDate = new Date().getDate()
     this.today = new Date()
     this.selectedDaysMap = new Map()
+    this.disabledDaysMap = new Map()
     this.state = {
       selectedDays: [this.todaysDate],
       currentMonthYear: new Date(),
@@ -28,9 +29,22 @@ export default class Calender extends Component {
     ];
   }
 
+  componentDidMount () {
+    let  {currentMonthYear} = this.state
+    let dateString = new Date(currentMonthYear.getFullYear(), currentMonthYear.getMonth(), 0).toLocaleDateString()
+    this.disabledDaysMap.set(dateString, new Map().set(19, 19))
+    this.setState(
+      {
+      selectedDays: this.todaysDate
+
+      }
+    )
+  }
+
   onDaySelect (day) {
     let  {currentMonthYear} = this.state
-    let dateString = `${currentMonthYear.getFullYear()}/${currentMonthYear.getMonth()}`
+    let dateString = new Date(currentMonthYear.getFullYear(), currentMonthYear.getMonth(), 0).toLocaleDateString()
+
     // find current months list
     if (this.selectedDaysMap.has(dateString)){
       let currentMonthsMap = this.selectedDaysMap.get(dateString)
@@ -80,13 +94,15 @@ export default class Calender extends Component {
     }
     return days;
   }
-  prepareCalenderClassList (day, index) {
+  prepareCalenderClassList (day) {
     let {currentMonthYear} = this.state
     let runningMonth = new Date().getMonth(), runningYear = new Date().getFullYear();
     // get seleted days  for current month
-    let dateString = `${currentMonthYear.getFullYear()}/${currentMonthYear.getMonth()}`
+    let dateString = new Date(currentMonthYear.getFullYear(), currentMonthYear.getMonth(), 0).toLocaleDateString()
     let daysOfSelectedMonth = this.selectedDaysMap.get(dateString)
+    let disabledDaysOfMonth = this.disabledDaysMap.get(dateString)
     let selectedDays = daysOfSelectedMonth ? [...daysOfSelectedMonth.values()] : []
+    let disabledDays = disabledDaysOfMonth ? [...disabledDaysOfMonth.values()] : []
     let classList = ['day'] // default class
 
     // highlighting todya's date
@@ -98,8 +114,12 @@ export default class Calender extends Component {
     if (selectedDays.includes(day)) {
       classList.push('selected')
     }
+    // highlight disabled days
+    if (disabledDays.includes(day)){
+      classList.push('invalid')
+    }
     // disable past day's for running month
-    if (this.todaysDate > day && index  <=30 && currentMonthYear.getMonth() == runningMonth && currentMonthYear.getFullYear() == runningYear) {
+    if (this.todaysDate > day && currentMonthYear.getMonth() == runningMonth && currentMonthYear.getFullYear() == runningYear) {
       classList.push('disabled')
     }
     // disable all  past  day's
@@ -108,16 +128,14 @@ export default class Calender extends Component {
     }
 
     // highlight  first day of months
-    if (day == 1 && index < 30 ) {
+    if (day == 1) {
       classList.push('firstday')
     }
     return classList.join(' ')
 
   }
   showCalender(month, year) {
-    let  {selectedDays} = this.state
     let days = this.daysOfMonth(month, year);
-    let firstDayofMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getDay()
 
     return (
       <div className="calender-months">
@@ -125,7 +143,7 @@ export default class Calender extends Component {
         {days.map((day, index) => (
           <div
             key={index}
-            className={this.prepareCalenderClassList(day, index)}
+            className={this.prepareCalenderClassList(day)}
             onClick={() => this.onDaySelect(day)}
           >
             {day}
