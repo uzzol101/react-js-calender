@@ -71,16 +71,24 @@ export default class Calender extends Component {
     return days;
   }
   prepareCalenderClassList (day) {
+    let {currentMonthYear} = this.state
+    let runningMonth = new Date().getMonth(), runningYear = new Date().getFullYear();
     let {selectedDays} = this.state
     let classList = ['day'] // default class
-    if (selectedDays.includes(day)) {
+
+    // highlighting todya's date
+    if (selectedDays.includes(day) && currentMonthYear.getMonth() == runningMonth && currentMonthYear.getFullYear() == runningYear) {
       classList.push('selected')
     }
 
-    if (this.todaysDate > day) {
+    // disable past day's for running month
+    if (this.todaysDate > day && currentMonthYear.getMonth() == runningMonth && currentMonthYear.getFullYear() == runningYear) {
       classList.push('disabled')
     }
-
+    // disable all  past  day's
+    if (currentMonthYear.getMonth() <  runningMonth) {
+      classList.push('disabled')
+    }
     return classList.join(' ')
 
   }
