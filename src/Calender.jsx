@@ -129,10 +129,10 @@ export default class Calender extends Component {
       new Date(year, month, 1).getMonth(),
       1
     ).getDay();
+    // offset days till firstDayOfMonth
     let days = [...Array.from(Array(firstDayofMonth).values())];
-    for (let i = 0; i < numOfDays; i++) {
-      let day = new Date(year, month, i + 1).getDate();
-      days.push(day);
+    for (let d = 1; d <= numOfDays; d++) {
+      days.push(d);
     }
     return days;
   }
