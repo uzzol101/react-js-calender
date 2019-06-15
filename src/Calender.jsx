@@ -5,7 +5,7 @@ export default class Calender extends Component {
     super(props);
     this.todaysDate = new Date().getDate()
     this.today = new Date()
-    this.selectedDaysMap = new Map().set(`${this.today.getFullYear()}/${this.today.getMonth()}`, new Map().set(this.todaysDate,this.todaysDate))
+    this.selectedDaysMap = new Map()
     this.state = {
       selectedDays: [this.todaysDate],
       currentMonthYear: new Date(),
@@ -30,7 +30,6 @@ export default class Calender extends Component {
 
   onDaySelect (day) {
     let  {currentMonthYear} = this.state
-    console.log('keys ', this.selectedDaysMap.keys())
     let dateString = `${currentMonthYear.getFullYear()}/${currentMonthYear.getMonth()}`
     // find current months list
     if (this.selectedDaysMap.has(dateString)){
@@ -84,14 +83,21 @@ export default class Calender extends Component {
   prepareCalenderClassList (day, index) {
     let {currentMonthYear} = this.state
     let runningMonth = new Date().getMonth(), runningYear = new Date().getFullYear();
-    let {selectedDays} = this.state
+    // get seleted days  for current month
+    let dateString = `${currentMonthYear.getFullYear()}/${currentMonthYear.getMonth()}`
+    let daysOfSelectedMonth = this.selectedDaysMap.get(dateString)
+    let selectedDays = daysOfSelectedMonth ? [...daysOfSelectedMonth.values()] : []
     let classList = ['day'] // default class
 
     // highlighting todya's date
-    if (selectedDays.includes(day) && currentMonthYear.getMonth() == runningMonth && currentMonthYear.getFullYear() == runningYear) {
-      classList.push('selected')
+    if (day == this.todaysDate && currentMonthYear.getMonth() == runningMonth && currentMonthYear.getFullYear() == runningYear) {
+      classList.push('today')
     }
 
+    // highlight selected days
+    if (selectedDays.includes(day)) {
+      classList.push('selected')
+    }
     // disable past day's for running month
     if (this.todaysDate > day && index  <=30 && currentMonthYear.getMonth() == runningMonth && currentMonthYear.getFullYear() == runningYear) {
       classList.push('disabled')
@@ -103,7 +109,7 @@ export default class Calender extends Component {
 
     // highlight  first day of months
     if (day == 1 && index < 30 ) {
-      classList.push('disabled')
+      classList.push('firstday')
     }
     return classList.join(' ')
 

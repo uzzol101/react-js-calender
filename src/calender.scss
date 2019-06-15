@@ -5,6 +5,14 @@ body {
 .calender {
     width: 350px;
     margin: 0 auto;
+    .firstday {
+        background:  orange;
+        color:  #fff; 
+    }
+    .today {
+        color: green;
+        border: 1px solid green;
+    }
     .selected {
         background: olivedrab;
         color: #fff;
@@ -27,6 +35,7 @@ body {
         flex-wrap: wrap;
         .day {
             display: flex;
+            box-sizing: border-box;
             width: 50px;
             justify-content: center;
             align-items: center;
