@@ -1,0 +1,42 @@
+body {
+    /* background: red; */
+}
+
+.calender {
+    width: 350px;
+    margin: 0 auto;
+    .selected {
+        background: olivedrab;
+        color: #fff;
+    }
+    .disabled {
+        background: gray;
+    }
+    .weekdays {
+        display: flex;
+        justify-content: space-between;
+        span {
+            border: 1px solid red;
+            display: flex;
+            flex-grow: 1;
+        }
+    }
+
+    .calender-months {
+        display: flex;
+        flex-wrap: wrap;
+        .day {
+            display: flex;
+            width: 50px;
+            justify-content: center;
+            align-items: center;
+            height: 30px;
+        }
+        
+        
+    }
+}
+
+
+
+
