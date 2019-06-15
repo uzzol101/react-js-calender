@@ -71,7 +71,7 @@ export default class Calender extends Component {
 
   }
   daysOfMonth(month, year) {
-    let numOfDays = new Date(year, month, 0).getDate();
+    let numOfDays = new Date(year, month+1, 0).getDate();
     let  firstDayofMonth = new Date(new Date(year, month,1).getFullYear(), new Date(year, month, 1).getMonth(), 1).getDay()
     let days = [...Array.from(Array(firstDayofMonth).values())];
     for (let i = 0; i < numOfDays; i++) {
