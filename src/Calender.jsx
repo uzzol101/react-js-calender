@@ -4,7 +4,8 @@ export default class Calender extends Component {
   constructor(props) {
     super(props);
     this.todaysDate = new Date().getDate()
-    this.selectedDaysMap = new Map().set(this.todaysDate, this.todaysDate)
+    this.today = new Date()
+    this.selectedDaysMap = new Map().set(`${this.today.getFullYear()}/${this.today.getMonth()}`, new Map().set(this.todaysDate,this.todaysDate))
     this.state = {
       selectedDays: [this.todaysDate],
       currentMonthYear: new Date(),
@@ -28,13 +29,23 @@ export default class Calender extends Component {
   }
 
   onDaySelect (day) {
-    let {selectedDays} = this.state
-    if(this.selectedDaysMap.get(day)){
-      this.selectedDaysMap.delete(day)
+    let  {currentMonthYear} = this.state
+    console.log('keys ', this.selectedDaysMap.keys())
+    let dateString = `${currentMonthYear.getFullYear()}/${currentMonthYear.getMonth()}`
+    // find current months list
+    if (this.selectedDaysMap.has(dateString)){
+      let currentMonthsMap = this.selectedDaysMap.get(dateString)
+      if  (currentMonthsMap.has(day)) {
+        currentMonthsMap.delete(day)
+      }else {
+        currentMonthsMap.set(day, day)
+      }
     } else  {
-      this.selectedDaysMap.set(day, day)
+      this.selectedDaysMap.set(dateString, new  Map().set(day, day))
     }
-    let days = [...this.selectedDaysMap.values()]
+    
+    let presentMonthsMap = this.selectedDaysMap.get(dateString)
+    let days = [...presentMonthsMap.values()]
     this.setState({
       selectedDays: days
     })
