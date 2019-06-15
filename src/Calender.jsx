@@ -13,7 +13,7 @@ export default class Calender extends Component {
       selectedDays: [this.todaysDate],
       currentMonthYear: new Date()
     };
-    this.days = ["sun", "mon", "tues", "wed", "thurs", "fri", "sat"];
+    this.days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
     this.months = [
       "january",
       "february",
@@ -37,9 +37,9 @@ export default class Calender extends Component {
       currentMonthYear.getMonth(),
       0
     ).toLocaleDateString();
+    // for testing
     this.dateRange(new  Date(2019,5,20), new Date(2019,5,22))
     this.dateRange(new  Date(2019,5,25), new Date(2019,5,26))
-
     this.setState({
       selectedDays: this.todaysDate
     });
@@ -73,6 +73,7 @@ export default class Calender extends Component {
       
     }
   }
+
   onDaySelect(day) {
     let { currentMonthYear } = this.state;
     let dateString = new Date(
@@ -100,6 +101,7 @@ export default class Calender extends Component {
       selectedDays: days
     });
   }
+
   onChangeMonth(value) {
     let { currentMonthYear } = this.state;
     if (value == "next") {
@@ -119,6 +121,7 @@ export default class Calender extends Component {
       });
     }
   }
+
   daysOfMonth(month, year) {
     let numOfDays = new Date(year, month + 1, 0).getDate();
     let firstDayofMonth = new Date(
@@ -133,11 +136,11 @@ export default class Calender extends Component {
     }
     return days;
   }
+
   prepareCalenderClassList(day) {
     let { currentMonthYear } = this.state;
     let runningMonth = new Date().getMonth(),
       runningYear = new Date().getFullYear();
-    // get seleted days  for current month
     let dateString = new Date(
       currentMonthYear.getFullYear(),
       currentMonthYear.getMonth(),
@@ -194,7 +197,6 @@ export default class Calender extends Component {
   }
   showCalender(month, year) {
     let days = this.daysOfMonth(month, year);
-
     return (
       <div className="calender-months">
         {days.map((day, index) => (
@@ -227,7 +229,7 @@ export default class Calender extends Component {
                 Prev
               </div>
               <div className="show-months">
-                {this.months[currentMonth]} {currentYear}
+                <div className="months">{this.months[currentMonth]} </div> <div className="year">{currentYear}</div>
               </div>
               <div
                 onClick={() => this.onChangeMonth("next")}

@@ -26,10 +26,27 @@ body {
     .weekdays {
         display: flex;
         justify-content: space-between;
+        margin-top: 20px;
         span {
-            border: 1px solid red;
             display: flex;
             flex-grow: 1;
+            width: 50px;
+            justify-content: center;
+            text-transform: uppercase;
+        }
+    }
+
+    .select-months {
+        display: flex;
+        width: 200px;
+        margin: 0 auto;
+        justify-content: space-between;
+        .show-months {
+            display: flex;
+            text-transform: uppercase;
+            .months {
+                margin-right: 10px;
+            }
         }
     }
 
