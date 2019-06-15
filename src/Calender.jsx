@@ -3,14 +3,15 @@ import "./calender.scss";
 export default class Calender extends Component {
   constructor(props) {
     super(props);
-    this.todaysDate = new Date().getDate()
-    this.today = new Date()
-    this.selectedDaysMap = new Map()
-    this.disabledDaysMap = new Map()
+    this.todaysDate = new Date().getDate();
+    this.today = new Date();
+    this.invalidDay1 = new Date(2019, 5, 20);
+    this.invalidDay2 = new Date(2019, 5, 29);
+    this.selectedDaysMap = new Map();
+    this.disabledDaysMap = new Map();
     this.state = {
       selectedDays: [this.todaysDate],
-      currentMonthYear: new Date(),
-      
+      currentMonthYear: new Date()
     };
     this.days = ["sun", "mon", "tues", "wed", "thurs", "fri", "sat"];
     this.months = [
@@ -29,117 +30,171 @@ export default class Calender extends Component {
     ];
   }
 
-  componentDidMount () {
-    let  {currentMonthYear} = this.state
-    let dateString = new Date(currentMonthYear.getFullYear(), currentMonthYear.getMonth(), 0).toLocaleDateString()
-    this.disabledDaysMap.set(dateString, new Map().set(19, 19))
-    this.setState(
-      {
+  componentDidMount() {
+    let { currentMonthYear } = this.state;
+    let dateString = new Date(
+      currentMonthYear.getFullYear(),
+      currentMonthYear.getMonth(),
+      0
+    ).toLocaleDateString();
+    this.dateRange(new  Date(2019,5,20), new Date(2019,6,28))
+    this.setState({
       selectedDays: this.todaysDate
-
-      }
-    )
+    });
   }
 
-  onDaySelect (day) {
-    let  {currentMonthYear} = this.state
-    let dateString = new Date(currentMonthYear.getFullYear(), currentMonthYear.getMonth(), 0).toLocaleDateString()
+  calculateTimeIntervalInDay(fromdate, todate) {
+    // miliseconds in a day
+    let ms_per_day = 1000 * 60 * 60 * 24;
+    let diffTime = new Date(todate) - new Date(fromdate);
+    let diffTimeInDay = Math.floor(diffTime / ms_per_day);
+    return diffTimeInDay;
+  }
+
+  dateRange(fromdate, todate) {
+    let fromDay = new Date(fromdate).getDate();
+    let dayDiff = this.calculateTimeIntervalInDay(fromdate, todate);
+    for (let i = 0; i <= dayDiff; i++) {
+      let finalDate = new Date(new Date(fromdate).setDate(fromDay + i));
+      let day = finalDate.getDate();
+      let dateString = new Date(new Date(finalDate.getFullYear(), finalDate.getMonth(), 0)).toLocaleDateString();
+      if (this.disabledDaysMap.has(dateString)) {
+        let currentMonthsMap = this.disabledDaysMap.get(dateString);
+        if (currentMonthsMap.has(day)) {
+          currentMonthsMap.delete(day);
+        } else {
+          currentMonthsMap.set(day, day);
+        }
+      } else {
+        this.disabledDaysMap.set(dateString, new Map().set(day, day));
+      }
+      
+    }
+  }
+  onDaySelect(day) {
+    let { currentMonthYear } = this.state;
+    let dateString = new Date(
+      currentMonthYear.getFullYear(),
+      currentMonthYear.getMonth(),
+      0
+    ).toLocaleDateString();
 
     // find current months list
-    if (this.selectedDaysMap.has(dateString)){
-      let currentMonthsMap = this.selectedDaysMap.get(dateString)
-      if  (currentMonthsMap.has(day)) {
-        currentMonthsMap.delete(day)
-      }else {
-        currentMonthsMap.set(day, day)
+    if (this.selectedDaysMap.has(dateString)) {
+      let currentMonthsMap = this.selectedDaysMap.get(dateString);
+      if (currentMonthsMap.has(day)) {
+        currentMonthsMap.delete(day);
+      } else {
+        currentMonthsMap.set(day, day);
       }
-    } else  {
-      this.selectedDaysMap.set(dateString, new  Map().set(day, day))
-    }
-    
-    let presentMonthsMap = this.selectedDaysMap.get(dateString)
-    let days = [...presentMonthsMap.values()]
-    this.setState({
-      selectedDays: days
-    })
-    
-  }
-  onChangeMonth (value)  {
-    let {currentMonthYear} = this.state
-    if (value  ==  'next') {
-      let currentMonth = currentMonthYear.getMonth()
-      currentMonth++
-      currentMonthYear.setMonth(currentMonth)
-      this.setState({
-        currentMonthYear
-      })
-    }
-    if (value == 'prev') {
-      let currentMonth = currentMonthYear.getMonth()
-      currentMonth--
-      currentMonthYear.setMonth(currentMonth)
-      this.setState({
-        currentMonthYear
-      })
+    } else {
+      this.selectedDaysMap.set(dateString, new Map().set(day, day));
     }
 
+    let presentMonthsMap = this.selectedDaysMap.get(dateString);
+    let days = [...presentMonthsMap.values()];
+
+    this.setState({
+      selectedDays: days
+    });
+  }
+  onChangeMonth(value) {
+    let { currentMonthYear } = this.state;
+    if (value == "next") {
+      let currentMonth = currentMonthYear.getMonth();
+      currentMonth++;
+      currentMonthYear.setMonth(currentMonth);
+      this.setState({
+        currentMonthYear
+      });
+    }
+    if (value == "prev") {
+      let currentMonth = currentMonthYear.getMonth();
+      currentMonth--;
+      currentMonthYear.setMonth(currentMonth);
+      this.setState({
+        currentMonthYear
+      });
+    }
   }
   daysOfMonth(month, year) {
-    let numOfDays = new Date(year, month+1, 0).getDate();
-    let  firstDayofMonth = new Date(new Date(year, month,1).getFullYear(), new Date(year, month, 1).getMonth(), 1).getDay()
+    let numOfDays = new Date(year, month + 1, 0).getDate();
+    let firstDayofMonth = new Date(
+      new Date(year, month, 1).getFullYear(),
+      new Date(year, month, 1).getMonth(),
+      1
+    ).getDay();
     let days = [...Array.from(Array(firstDayofMonth).values())];
     for (let i = 0; i < numOfDays; i++) {
       let day = new Date(year, month, i + 1).getDate();
-      days.push(day)
+      days.push(day);
     }
     return days;
   }
-  prepareCalenderClassList (day) {
-    let {currentMonthYear} = this.state
-    let runningMonth = new Date().getMonth(), runningYear = new Date().getFullYear();
+  prepareCalenderClassList(day) {
+    let { currentMonthYear } = this.state;
+    let runningMonth = new Date().getMonth(),
+      runningYear = new Date().getFullYear();
     // get seleted days  for current month
-    let dateString = new Date(currentMonthYear.getFullYear(), currentMonthYear.getMonth(), 0).toLocaleDateString()
-    let daysOfSelectedMonth = this.selectedDaysMap.get(dateString)
-    let disabledDaysOfMonth = this.disabledDaysMap.get(dateString)
-    let selectedDays = daysOfSelectedMonth ? [...daysOfSelectedMonth.values()] : []
-    let disabledDays = disabledDaysOfMonth ? [...disabledDaysOfMonth.values()] : []
-    let classList = ['day'] // default class
+    let dateString = new Date(
+      currentMonthYear.getFullYear(),
+      currentMonthYear.getMonth(),
+      0
+    ).toLocaleDateString();
+    let daysOfSelectedMonth = this.selectedDaysMap.get(dateString);
+    let disabledDaysOfMonth = this.disabledDaysMap.get(dateString);
+    let selectedDays = daysOfSelectedMonth
+      ? [...daysOfSelectedMonth.values()]
+      : [];
+    let disabledDays = disabledDaysOfMonth
+      ? [...disabledDaysOfMonth.values()]
+      : [];
+    let classList = ["day"]; // default class
 
     // highlighting todya's date
-    if (day == this.todaysDate && currentMonthYear.getMonth() == runningMonth && currentMonthYear.getFullYear() == runningYear) {
-      classList.push('today')
+    if (
+      day == this.todaysDate &&
+      currentMonthYear.getMonth() == runningMonth &&
+      currentMonthYear.getFullYear() == runningYear
+    ) {
+      classList.push("today");
     }
 
     // highlight selected days
     if (selectedDays.includes(day)) {
-      classList.push('selected')
+      classList.push("selected");
     }
     // highlight disabled days
-    if (disabledDays.includes(day)){
-      classList.push('invalid')
+    if (disabledDays.includes(day)) {
+      classList.push("invalid");
     }
     // disable past day's for running month
-    if (this.todaysDate > day && currentMonthYear.getMonth() == runningMonth && currentMonthYear.getFullYear() == runningYear) {
-      classList.push('disabled')
+    if (
+      this.todaysDate > day &&
+      currentMonthYear.getMonth() == runningMonth &&
+      currentMonthYear.getFullYear() == runningYear
+    ) {
+      classList.push("disabled");
     }
     // disable all  past  day's
-    if (currentMonthYear.getMonth() <  runningMonth && currentMonthYear.getFullYear() <= runningYear) {
-      classList.push('disabled')
+    if (
+      currentMonthYear.getMonth() < runningMonth &&
+      currentMonthYear.getFullYear() <= runningYear
+    ) {
+      classList.push("disabled");
     }
 
     // highlight  first day of months
     if (day == 1) {
-      classList.push('firstday')
+      classList.push("firstday");
     }
-    return classList.join(' ')
-
+    return classList.join(" ");
   }
   showCalender(month, year) {
     let days = this.daysOfMonth(month, year);
 
     return (
       <div className="calender-months">
-          
         {days.map((day, index) => (
           <div
             key={index}
@@ -153,30 +208,40 @@ export default class Calender extends Component {
     );
   }
 
-
   render() {
-    let {currentMonthYear} = this.state
-    let currentMonth = currentMonthYear.getMonth()
-    let currentYear = currentMonthYear.getUTCFullYear()
+    let { currentMonthYear } = this.state;
+    let currentMonth = currentMonthYear.getMonth();
+    let currentYear = currentMonthYear.getUTCFullYear();
     return (
       <>
         <div className="calender">
           <div className="header">
             <div className="select-months">
-              <div onClick={() => this.onChangeMonth('prev')} className="button-left">Prev</div>
-              <div className="show-months">
-                {this.months[currentMonth]} { currentYear}
+              <div
+                onClick={() => this.onChangeMonth("prev")}
+                className="button-left"
+              >
+                Prev
               </div>
-              <div onClick={() => this.onChangeMonth('next')} className="button-left">Next</div>
-
+              <div className="show-months">
+                {this.months[currentMonth]} {currentYear}
+              </div>
+              <div
+                onClick={() => this.onChangeMonth("next")}
+                className="button-left"
+              >
+                Next
+              </div>
             </div>
             <div className="weekdays">
-            {this.days.map((day, idx) => (
-              <span key={idx}>{day}</span>
-            ))}
+              {this.days.map((day, idx) => (
+                <span key={idx}>{day}</span>
+              ))}
             </div>
           </div>
-          <div className="body">{this.showCalender(currentMonth, currentYear)}</div>
+          <div className="body">
+            {this.showCalender(currentMonth, currentYear)}
+          </div>
         </div>
       </>
     );
