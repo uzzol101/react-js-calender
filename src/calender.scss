@@ -6,7 +6,7 @@ body {
     width: 350px;
     margin: 0 auto;
     .firstday {
-        background:  orange;
+        // background:  orange;
         color:  #fff; 
     }
     .today {
@@ -22,6 +22,9 @@ body {
     }
     .invalid {
         background: pink;
+    }
+    .gray-out {
+        color: #f76868
     }
     .weekdays {
         display: flex;

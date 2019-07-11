@@ -9,6 +9,11 @@ export default class Calender extends Component {
     this.disabledDaysMap = new Map();
     this.selectedDaysList = []
     this.disabledDaysList = []
+    this.daysOfCurrentMonths = []
+    this.offsetStartDays = []
+    this.offsetEndDays = []
+    this.calendarDays = []
+    this.TOTAL_CALENDAR_GRID = 42
     this.state = {
       selectedDays: [this.todaysDate],
       currentMonthYear: new Date()
@@ -44,7 +49,39 @@ export default class Calender extends Component {
       selectedDays: this.todaysDate
     });
   }
+  offsetStartingDays (startDayOfMonth) {
+    let { currentMonthYear } = this.state;
+    this.offsetStartDays = []
+    let year = currentMonthYear.getUTCFullYear()
+    let month = currentMonthYear.getMonth()
+    let pastDays = []
+    let daysFromPreviousMonth = new Date(
+      year,
+      month - 1,
+      0
+    ).getDate()
+    
+    for (let d = daysFromPreviousMonth; d > (daysFromPreviousMonth - startDayOfMonth); d--) {
+      pastDays.push(
+        <div className="day gray-out">
+          <span>{d}</span>
+        </div>
+      )
+    }
+    this.offsetStartDays.push(...pastDays.reverse())
 
+  }
+  offsetEndingDays (totalCalendarColumn, columnFilledInDate) {
+    this.offsetEndDays = []
+    for (let d = 1; d <= (totalCalendarColumn - columnFilledInDate); d++) {
+      this.offsetEndDays.push(
+        <div className="day gray-out">
+        <span>{d}</span>
+      </div>
+      )
+    }
+    
+  }
   calculateTimeIntervalInDay(fromdate, todate) {
     // miliseconds in a day
     let ms_per_day = 1000 * 60 * 60 * 24;
@@ -124,17 +161,25 @@ export default class Calender extends Component {
 
   daysOfMonth(month, year) {
     let numOfDays = new Date(year, month + 1, 0).getDate();
+    let calendarDays = []
+    this.daysOfCurrentMonths = []
     let firstDayofMonth = new Date(
       new Date(year, month, 1).getFullYear(),
       new Date(year, month, 1).getMonth(),
       1
     ).getDay();
-    // offset days till firstDayOfMonth
-    let days = [...Array.from(Array(firstDayofMonth).values())];
-    for (let d = 1; d <= numOfDays; d++) {
-      days.push(d);
+    // days of this current month
+    for (let day = 1; day <= numOfDays; day++) {
+      this.daysOfCurrentMonths.push(day)
     }
-    return days;
+    // offset starting days
+    this.offsetStartingDays(firstDayofMonth)
+    calendarDays.push(...this.offsetStartDays)
+    calendarDays.push(...this.daysOfCurrentMonths)
+    // offset ending days
+    this.offsetEndingDays(this.TOTAL_CALENDAR_GRID, calendarDays.length)
+    calendarDays.push(...this.offsetEndDays)
+    return calendarDays
   }
 
   prepareCalenderClassList(day) {
@@ -202,7 +247,7 @@ export default class Calender extends Component {
         {days.map((day, index) => (
           <div
             key={index}
-            className={this.prepareCalenderClassList(day)}
+            className="day"
             onClick={() => this.onDaySelect(day)}
           >
             {day}{this.disabledDaysList.includes(day)? <div>D</div>:  ""}
